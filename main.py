@@ -96,7 +96,6 @@ intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 @app_commands.command(name="recommandations", description="Obtiens des conseils de stats selon ta classe et ton niveau")
-@app_commands.describe(nom="Recommandations")
 async def recommandations(ctx):
     await ctx.respond("Commençons par ta faction :", view=RecommandationsView(bot))
 
