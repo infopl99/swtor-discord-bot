@@ -15,7 +15,7 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 # Événement on_ready + synchronisation slash
 @bot.event
 async def on_ready():
-    guild = discord.Object(id=GUILD_ID)
+    guild = discord.Object(id=int(GUILD_ID))
     await bot.tree.sync(guild=guild)  # synchronisation pour ton serveur uniquement
     print(f"✅ Connecté en tant que {bot.user}")
     print(f"✅ Commandes slash synchronisées pour le serveur : {GUILD_ID}")
