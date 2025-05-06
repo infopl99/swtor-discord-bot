@@ -109,4 +109,9 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Erreur de synchronisation : {e}")
 
-bot.run(TOKEN)
+# Lancement du bot
+if __name__ == "__main__":
+    if TOKEN:
+        bot.run(TOKEN)
+    else:
+        print("❌ Token Discord introuvable. Vérifie .env ou la variable d'environnement DISCORD_TOKEN.")
