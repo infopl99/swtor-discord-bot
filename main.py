@@ -112,7 +112,7 @@ async def on_ready():
 
 @bot.event
 async def setup_hook():
-    extension = f"commands.{main.py}"
+    extension = f"main"
     try:
         await bot.load_extension(extension)
         print(f"✅ Extension chargée : {extension}")
