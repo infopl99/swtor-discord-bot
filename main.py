@@ -32,4 +32,4 @@ async def setup_hook():
             await bot.load_extension(f"commands.{filename[:-3]}")
             print(f"🔁 Extension chargée : {filename}")
 
-# bot.run(TOKEN)
+bot.run(TOKEN)
