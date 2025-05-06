@@ -5,12 +5,9 @@ import sqlite3
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
 # Chargement du token depuis une variable d'environnement ou un fichier .env
 TOKEN = os.getenv("DISCORD_TOKEN")
-if not TOKEN:    
-    TOKEN = os.getenv("DISCORD_TOKEN")
-    GUILD_ID = int(os.getenv("GUILD"))
+GUILD_ID = int(os.getenv("GUILD"))
 
 # Intégration au bot
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
