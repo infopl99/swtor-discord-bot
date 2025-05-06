@@ -109,4 +109,4 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Erreur de synchronisation : {e}")
 
-# bot.run(TOKEN)
+bot.run(TOKEN)
