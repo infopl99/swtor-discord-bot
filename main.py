@@ -92,9 +92,11 @@ if not TOKEN:
     GUILD_ID = int(os.getenv("GUILD"))
 
 # Intégration au bot
+intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 @app_commands.command(name="recommandations", description="Obtiens des conseils de stats selon ta classe et ton niveau")
+@app_commands.describe(nom="Recommandations")
 async def recommandations(ctx):
     await ctx.respond("Commençons par ta faction :", view=RecommandationsView(bot))
 
@@ -105,9 +107,18 @@ async def on_ready():
     try:
         # Syncer la commande pour le serveur explicitement
         await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
-        print("✅ Commandes slash synchronisées dans les deux serveurs")
+        print("✅ Commandes slash synchronisées dans le serveur")
     except Exception as e:
         print(f"❌ Erreur de synchronisation : {e}")
+
+@bot.event
+async def setup_hook():
+    extension = f"commands.{main.py}"
+    try:
+        await bot.load_extension(extension)
+        print(f"✅ Extension chargée : {extension}")
+    except Exception as e:
+        print(f"❌ Erreur chargement {extension} : {e}")
 
 # Lancement du bot
 if __name__ == "__main__":
