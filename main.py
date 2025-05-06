@@ -16,10 +16,6 @@ if not TOKEN:
 # Intégration au bot
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
-@bot.slash_command(name="recommandations", description="Obtiens des conseils de stats selon ta classe et ton niveau")
-async def recommandations(ctx):
-    await ctx.respond("Commençons par ta faction :", view=RecommandationsView(bot))
-
 # Événement on_ready + synchronisation slash
 @bot.event
 async def on_ready():
