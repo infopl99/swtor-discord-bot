@@ -18,10 +18,14 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 # Événement on_ready + synchronisation slash
 @bot.event
 async def on_ready():
-    guild = discord.Object(id=int(GUILD_ID))
-    await bot.tree.sync(guild=guild)  # synchronisation pour ton serveur uniquement
-    print(f"✅ Connecté en tant que {bot.user}")
-    print(f"✅ Commandes slash synchronisées pour le serveur : {GUILD_ID}")
+    print(f"Connecté en tant que {bot.user}")
+    try:
+        synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))  # pour le serveur actuel
+        await bot.tree.sync()  # pour synchroniser globalement
+        print("Commandes synchronisées.")
+        print(f"{len(synced)} commandes synchronisées avec succès.")
+    except Exception as e:
+        print(f"Erreur de synchronisation des commandes : {e}")
 
 # Chargement des extensions (dossier "commands/")
 @bot.event
