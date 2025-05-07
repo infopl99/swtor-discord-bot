@@ -20,6 +20,7 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 async def on_ready():
     print(f"Connecté en tant que {bot.user}")
     try:
+        await bot.tree.clear_commands(guild=None)  # vide les commandes globales
         synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))  # pour le serveur actuel
         await bot.tree.sync()  # pour synchroniser globalement
         print("Commandes synchronisées.")
