@@ -15,6 +15,14 @@ GUILD_ID = int(GUILD_ID)
 # Intégration au bot
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
+# Chargement des extensions (dossier "commands/")
+@bot.event
+async def setup_hook():
+    for filename in os.listdir("./commands"):
+        if filename.endswith(".py"):
+            await bot.load_extension(f"commands.{filename[:-3]}")
+            print(f"🔁 Extension chargée : {filename}")
+
 # Événement on_ready + synchronisation slash
 @bot.event
 async def on_ready():
@@ -27,13 +35,5 @@ async def on_ready():
         print(f"{len(synced)} commandes synchronisées avec succès.")
     except Exception as e:
         print(f"Erreur de synchronisation des commandes : {e}")
-
-# Chargement des extensions (dossier "commands/")
-@bot.event
-async def setup_hook():
-    for filename in os.listdir("./commands"):
-        if filename.endswith(".py"):
-            await bot.load_extension(f"commands.{filename[:-3]}")
-            print(f"🔁 Extension chargée : {filename}")
 
 bot.run(TOKEN)
