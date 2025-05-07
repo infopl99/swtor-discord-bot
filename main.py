@@ -7,7 +7,10 @@ from dotenv import load_dotenv
 
 # Chargement du token depuis une variable d'environnement ou un fichier .env
 TOKEN = os.getenv("DISCORD_TOKEN")
-GUILD_ID = int(os.getenv("GUILD"))
+GUILD_ID = os.getenv("GUILD")
+if GUILD_ID is None:
+    raise ValueError("La variable d’environnement 'GUILD' est manquante.")
+GUILD_ID = int(GUILD_ID)
 
 # Intégration au bot
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
