@@ -54,7 +54,7 @@ class ClasseSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.parent_view.classe = self.values[0]
-        await interaction.response.edit_message(content="Classe choisie ! Choisis ton niveau :", parent_view=NiveauSelectView(self.parent_view))
+        await interaction.response.edit_message(content="Classe choisie ! Choisis ton niveau :", view=NiveauSelectView(self.parent_view))
 
 class NiveauSelectView(discord.ui.View):
     def __init__(self, parent_view):
