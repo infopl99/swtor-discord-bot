@@ -40,7 +40,7 @@ class FactionSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         self.parent_view.faction = self.values[0]
         await interaction.response.defer()
-        await interaction.response.edit_message(content="Faction choisie ! Choisis ta classe :", view=ClasseSelectView(self.parent_view))
+        await interaction.followup.edit_message(content="Faction choisie ! Choisis ta classe :", view=ClasseSelectView(self.parent_view))
 
 class ClasseSelectView(discord.ui.View):
     def __init__(self, parent_view):
@@ -61,7 +61,7 @@ class ClasseSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         self.parent_view.classe = self.values[0]
         await interaction.response.defer()
-        await interaction.response.edit_message(content="Classe choisie ! Choisis ton niveau :", view=NiveauSelectView(self.parent_view))
+        await interaction.followup.edit_message(content="Classe choisie ! Choisis ton niveau :", view=NiveauSelectView(self.parent_view))
 
 class NiveauSelectView(discord.ui.View):
     def __init__(self, parent_view):
@@ -86,7 +86,7 @@ class NiveauSelect(discord.ui.Select):
             for b in builds:
                 msg += f"**Spé : {b[0]}**\n🛡️ Rôle : {b[1]}\n📊 Stats : {b[2]}, {b[3]}, {b[4]}\n💡 {b[5]}\n\n"
         await interaction.response.defer()
-        await interaction.response.edit_message(content=msg, parent_view=None)
+        await interaction.followup.edit_message(content=msg, parent_view=None)
 
 def get_recommandations(faction, classe, niveau):
     conn = sqlite3.connect("swtor_recommandations.db")
