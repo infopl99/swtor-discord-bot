@@ -32,9 +32,9 @@ async def setup_hook():
 async def on_ready():
     logger.info(f"Connecté en tant que {bot.user}")
     try:
-        await bot.tree.clear_commands(guild=None)  # vide les commandes globales
+        synced = await bot.tree.clear_commands(guild=None)  # vide les commandes globales
         synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))  # pour le serveur actuel
-        await bot.tree.sync()  # pour synchroniser globalement
+        synced = await bot.tree.sync()  # pour synchroniser globalement
         logger.info("Commandes synchronisées.")
         logger.info(f"{len(synced)} commandes synchronisées avec succès.")
     except Exception as e:
