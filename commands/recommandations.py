@@ -84,8 +84,8 @@ def get_recommandations(faction, classe, niveau):
     conn = sqlite3.connect("swtor_recommandations.db")
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT specialisation, role, stat1, stat2, stat3, conseils
-    FROM builds
+    SELECT specialisation, role, maitrise, precison, alacrite, critique, niveau_min, conseils
+    FROM recommendations
     WHERE faction=? AND classe_avancee=? AND niveau_min<=?
     """, (faction, classe, niveau))
     results = cursor.fetchall()
