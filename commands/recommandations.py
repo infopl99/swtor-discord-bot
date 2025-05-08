@@ -11,7 +11,7 @@ class Recommandations(commands.Cog):
     @app_commands.describe(niveau="Ton niveau actuel", classe="Classe ou spécialisation")
     async def recommandations(self, interaction: discord.Interaction, niveau: int, classe: str):
         await interaction.response.send_message(
-            "Commençons par ta faction :", parent_view=RecommandationsView(self.bot), ephemeral=True
+            "Commençons par ta faction :", view=RecommandationsView(self.bot), ephemeral=True
         )
 
 class RecommandationsView(discord.ui.View):
