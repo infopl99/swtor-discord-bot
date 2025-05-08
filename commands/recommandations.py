@@ -11,7 +11,7 @@ class Recommandations(commands.Cog):
     @app_commands.describe(niveau="Ton niveau actuel", classe="Classe ou spécialisation")
     async def recommandations(self, interaction: discord.Interaction, niveau: int, classe: str):
         await interaction.response.send_message(
-            "Commençons par ta faction :", view=RecommandationsView(self.bot), ephemeral=True
+            "Commençons par ta faction :", parent_view=RecommandationsView(self.bot), ephemeral=True
         )
 
 class RecommandationsView(discord.ui.View):
@@ -34,7 +34,7 @@ class FactionSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.parent_view.faction = self.values[0]
-        await interaction.response.edit_message(content="Faction choisie ! Choisis ta classe :", view=ClasseSelectView(self.view))
+        await interaction.response.edit_message(content="Faction choisie ! Choisis ta classe :", view=ClasseSelectView(self.parent_view))
 
 class ClasseSelectView(discord.ui.View):
     def __init__(self, parent_view):
@@ -54,7 +54,7 @@ class ClasseSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.parent_view.classe = self.values[0]
-        await interaction.response.edit_message(content="Classe choisie ! Choisis ton niveau :", view=NiveauSelectView(self.parent_view))
+        await interaction.response.edit_message(content="Classe choisie ! Choisis ton niveau :", parent_view=NiveauSelectView(self.parent_view))
 
 class NiveauSelectView(discord.ui.View):
     def __init__(self, parent_view):
@@ -63,7 +63,7 @@ class NiveauSelectView(discord.ui.View):
         self.add_item(NiveauSelect(parent_view))
 
 class NiveauSelect(discord.ui.Select):
-    def __init__(self, view):
+    def __init__(self, parent_view):
         self.parent_view = parent_view
         niveaux = [50, 60, 70, 75, 80]
         options = [discord.SelectOption(label=str(n)) for n in niveaux]
