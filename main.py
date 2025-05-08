@@ -33,11 +33,11 @@ async def on_ready():
     try:
         if GUILD_ID:
             synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
-            print(f"✅ {len(synced)} commandes synchronisées pour le serveur {GUILD_ID}")
+            logger.info(f"✅ {len(synced)} commandes synchronisées pour le serveur {GUILD_ID}")
         else:
             synced = await bot.tree.sync()
-            print(f"✅ {len(synced)} commandes globales synchronisées.")
+            logger.info(f"✅ {len(synced)} commandes globales synchronisées.")
     except Exception as e:
-        print(f"❌ Erreur de synchronisation des commandes : {e}")
+        logger.info(f"❌ Erreur de synchronisation des commandes : {e}")
 
 bot.run(TOKEN)
