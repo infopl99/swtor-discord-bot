@@ -24,61 +24,61 @@ class RecommandationsView(discord.ui.View):
         self.add_item(FactionSelect(self))
 
 class FactionSelect(discord.ui.Select):
-    def __init__(self, view):
+    def __init__(self, parent_view):
         options = [
             discord.SelectOption(label="Republique"),
             discord.SelectOption(label="Empire"),
         ]
         super().__init__(placeholder="Choisis ta faction", options=options)
-        self.view = view
+        self.parent_view = parent_view
 
     async def callback(self, interaction: discord.Interaction):
-        self.view.faction = self.values[0]
+        self.parent_view.faction = self.values[0]
         await interaction.response.edit_message(content="Faction choisie ! Choisis ta classe :", view=ClasseSelectView(self.view))
 
 class ClasseSelectView(discord.ui.View):
-    def __init__(self, view):
+    def __init__(self, parent_view):
         super().__init__(timeout=60)
-        self.view = view
-        self.add_item(ClasseSelect(view))
+        self.parent_view = parent_view
+        self.add_item(ClasseSelect(parent_view))
 
 class ClasseSelect(discord.ui.Select):
-    def __init__(self, view):
-        self.view = view
+    def __init__(self, parent_view):
+        self.parent_view = parent_view
         classes = {
             "Republique": ["Sentinelle Jedi", "Gardien Jedi"],
             "Empire": ["Maraudeur Sith", "Ravageur Sith"],
         }
-        options = [discord.SelectOption(label=cls) for cls in classes[self.view.faction]]
+        options = [discord.SelectOption(label=cls) for cls in classes[self.parent_view.faction]]
         super().__init__(placeholder="Choisis ta classe avancée", options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        self.view.classe = self.values[0]
-        await interaction.response.edit_message(content="Classe choisie ! Choisis ton niveau :", view=NiveauSelectView(self.view))
+        self.parent_view.classe = self.values[0]
+        await interaction.response.edit_message(content="Classe choisie ! Choisis ton niveau :", view=NiveauSelectView(self.parent_view))
 
 class NiveauSelectView(discord.ui.View):
-    def __init__(self, view):
+    def __init__(self, parent_view):
         super().__init__(timeout=60)
-        self.view = view
-        self.add_item(NiveauSelect(view))
+        self.parent_view = parent_view
+        self.add_item(NiveauSelect(parent_view))
 
 class NiveauSelect(discord.ui.Select):
     def __init__(self, view):
-        self.view = view
+        self.parent_view = parent_view
         niveaux = [50, 60, 70, 75, 80]
         options = [discord.SelectOption(label=str(n)) for n in niveaux]
         super().__init__(placeholder="Choisis ton niveau", options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        self.view.niveau = int(self.values[0])
-        builds = get_recommandations(self.view.faction, self.view.classe, self.view.niveau)
+        self.parent_view.niveau = int(self.values[0])
+        builds = get_recommandations(self.parent_view.faction, self.parent_view.classe, self.parent_view.niveau)
         if not builds:
             msg = "Aucune recommandation trouvée pour ce niveau."
         else:
             msg = ""
             for b in builds:
                 msg += f"**Spé : {b[0]}**\n🛡️ Rôle : {b[1]}\n📊 Stats : {b[2]}, {b[3]}, {b[4]}\n💡 {b[5]}\n\n"
-        await interaction.response.edit_message(content=msg, view=None)
+        await interaction.response.edit_message(content=msg, parent_view=None)
 
 def get_recommandations(faction, classe, niveau):
     conn = sqlite3.connect("swtor_recommandations.db")
