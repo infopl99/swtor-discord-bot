@@ -12,9 +12,8 @@ logging.basicConfig(level=logging.INFO)
 # Chargement du token depuis une variable d'environnement ou un fichier .env
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD_ID = os.getenv("GUILD")
-if GUILD_ID is None:
-    raise ValueError("La variable d’environnement 'GUILD' est manquante.")
-GUILD_ID = int(GUILD_ID)
+if GUILD_ID is not None:
+    GUILD_ID = int(GUILD_ID)
 
 # Intégration au bot
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
@@ -30,14 +29,15 @@ async def setup_hook():
 # Événement on_ready + synchronisation slash
 @bot.event
 async def on_ready():
-    logger.info(f"Connecté en tant que {bot.user}")
+    print(f"✅ Connecté en tant que {bot.user}")
     try:
-        synced = await bot.tree.clear_commands(guild=None)  # vide les commandes globales
-        synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))  # pour le serveur actuel
-        synced = await bot.tree.sync()  # pour synchroniser globalement
-        logger.info("Commandes synchronisées.")
-        logger.info(f"{len(synced)} commandes synchronisées avec succès.")
+        if GUILD_ID:
+            synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
+            print(f"✅ {len(synced)} commandes synchronisées pour le serveur {GUILD_ID}")
+        else:
+            synced = await bot.tree.sync()
+            print(f"✅ {len(synced)} commandes globales synchronisées.")
     except Exception as e:
-        logger.info(f"Erreur de synchronisation des commandes : {e}")
+        print(f"❌ Erreur de synchronisation des commandes : {e}")
 
 bot.run(TOKEN)
