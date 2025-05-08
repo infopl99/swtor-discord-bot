@@ -1,7 +1,18 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 import sqlite3
-from discord import app_commands
+
+class Recommandations(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @app_commands.command(name="recommandations", description="Obtiens des conseils selon ta classe et ton niveau")
+    @app_commands.describe(niveau="Ton niveau actuel", classe="Classe ou spécialisation")
+    async def recommandations(self, interaction: discord.Interaction, niveau: int, classe: str):
+        await interaction.response.send_message(
+            "Commençons par ta faction :", view=RecommandationsView(self.bot), ephemeral=True
+        )
 
 class RecommandationsView(discord.ui.View):
     def __init__(self, bot):
@@ -11,11 +22,11 @@ class RecommandationsView(discord.ui.View):
         self.classe = None
         self.niveau = None
         self.add_item(FactionSelect(self))
-    
+
 class FactionSelect(discord.ui.Select):
     def __init__(self, view):
         options = [
-            discord.SelectOption(label="République"),
+            discord.SelectOption(label="Republique"),
             discord.SelectOption(label="Empire"),
         ]
         super().__init__(placeholder="Choisis ta faction", options=options)
@@ -35,7 +46,7 @@ class ClasseSelect(discord.ui.Select):
     def __init__(self, view):
         self.view = view
         classes = {
-            "République": ["Sentinelle Jedi", "Gardien Jedi"],
+            "Republique": ["Sentinelle Jedi", "Gardien Jedi"],
             "Empire": ["Maraudeur Sith", "Ravageur Sith"],
         }
         options = [discord.SelectOption(label=cls) for cls in classes[self.view.faction]]
@@ -66,29 +77,20 @@ class NiveauSelect(discord.ui.Select):
         else:
             msg = ""
             for b in builds:
-                msg += f"**Spé : {b[0]}**\n🛡️ Rôle : {b[1]}\n📊 Stats : {b[2]}, {b[3]}, {b[4]}, {b[5]}\n💡 {b[6]}\n\n"
+                msg += f"**Spé : {b[0]}**\n🛡️ Rôle : {b[1]}\n📊 Stats : {b[2]}, {b[3]}, {b[4]}\n💡 {b[5]}\n\n"
         await interaction.response.edit_message(content=msg, view=None)
 
 def get_recommandations(faction, classe, niveau):
     conn = sqlite3.connect("swtor_recommandations.db")
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT specialisation, role, maitrise, precision, alacrite, critique, conseils
-    FROM recommandations
+    SELECT specialisation, role, stat1, stat2, stat3, conseils
+    FROM builds
     WHERE faction=? AND classe_avancee=? AND niveau_min<=?
     """, (faction, classe, niveau))
     results = cursor.fetchall()
     conn.close()
     return results
-
-class Recommandations(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @app_commands.command(name="recommandations", description="Obtiens des conseils selon ta classe et ton niveau")
-    @app_commands.describe(niveau="Ton niveau actuel", classe="Classe ou spécialisation")
-    async def recommandations(self, interaction: discord.Interaction, niveau: int, classe: str):
-        await ctx.respond("Commençons par ta faction :", view=RecommandationsView(bot))
 
 async def setup(bot):
     await bot.add_cog(Recommandations(bot))
