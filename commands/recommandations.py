@@ -10,10 +10,14 @@ class Recommandations(commands.Cog):
     @app_commands.command(name="recommandations", description="Obtiens des conseils selon ta classe et ton niveau")
     @app_commands.describe(niveau="Ton niveau actuel", classe="Classe ou spécialisation")
     async def recommandations(self, interaction: discord.Interaction, niveau: int, classe: str):
-        await interaction.response.defer(ephemeral=True)
-        await interaction.response.send_message(
-            "Commençons par ta faction :", view=RecommandationsView(self.bot), ephemeral=True
-        )
+        try:
+            await interaction.response.defer(ephemeral=True)
+            await interaction.followup.send(
+            "Commençons par ta faction :", 
+            view=RecommandationsView(self.bot)
+            )
+        except Exception as e:
+            print(f"❌ Erreur lors du traitement de /recommandations : {e}")
 
 class RecommandationsView(discord.ui.View):
     def __init__(self, bot):
