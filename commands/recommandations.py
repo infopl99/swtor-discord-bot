@@ -10,14 +10,12 @@ class Recommandations(commands.Cog):
     @app_commands.command(name="recommandations", description="Obtiens des conseils selon ta classe et ton niveau")
     @app_commands.describe(niveau="Ton niveau actuel", classe="Classe ou spécialisation")
     async def recommandations(self, interaction: discord.Interaction, niveau: int, classe: str):
-        try:
-            await interaction.response.defer(ephemeral=True)
-            await interaction.followup.send(
-            "Commençons par ta faction :", 
-            view=RecommandationsView(self.bot)
-            )
-        except Exception as e:
-            print(f"❌ Erreur lors du traitement de /recommandations : {e}")
+        await interaction.response.defer(ephemeral=True)
+        await interaction.followup.send(
+            "Commençons par ta faction :",
+            view=RecommandationsView(self.bot),
+            ephemeral=True
+        )
 
 class RecommandationsView(discord.ui.View):
     def __init__(self, bot):
@@ -38,9 +36,13 @@ class FactionSelect(discord.ui.Select):
         self.parent_view = parent_view
 
     async def callback(self, interaction: discord.Interaction):
-        self.parent_view.faction = self.values[0]
         await interaction.response.defer()
-        await interaction.followup.edit_message(content="Faction choisie ! Choisis ta classe :", view=ClasseSelectView(self.parent_view))
+        self.parent_view.faction = self.values[0]
+        await interaction.followup.edit_message(
+            message_id=interaction.message.id,
+            content="Faction choisie ! Choisis ta classe :",
+            view=ClasseSelectView(self.parent_view)
+        )
 
 class ClasseSelectView(discord.ui.View):
     def __init__(self, parent_view):
@@ -59,9 +61,13 @@ class ClasseSelect(discord.ui.Select):
         super().__init__(placeholder="Choisis ta classe avancée", options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        self.parent_view.classe = self.values[0]
         await interaction.response.defer()
-        await interaction.followup.edit_message(content="Classe choisie ! Choisis ton niveau :", view=NiveauSelectView(self.parent_view))
+        self.parent_view.classe = self.values[0]
+        await interaction.followup.edit_message(
+            message_id=interaction.message.id,
+            content="Classe choisie ! Choisis ton niveau :",
+            view=NiveauSelectView(self.parent_view)
+        )
 
 class NiveauSelectView(discord.ui.View):
     def __init__(self, parent_view):
@@ -77,23 +83,31 @@ class NiveauSelect(discord.ui.Select):
         super().__init__(placeholder="Choisis ton niveau", options=options)
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         self.parent_view.niveau = int(self.values[0])
-        builds = get_recommandations(self.parent_view.faction, self.parent_view.classe, self.parent_view.niveau)
+        builds = get_recommandations(
+            self.parent_view.faction,
+            self.parent_view.classe,
+            self.parent_view.niveau
+        )
         if not builds:
             msg = "Aucune recommandation trouvée pour ce niveau."
         else:
             msg = ""
             for b in builds:
                 msg += f"**Spé : {b[0]}**\n🛡️ Rôle : {b[1]}\n📊 Stats : {b[2]}, {b[3]}, {b[4]}\n💡 {b[5]}\n\n"
-        await interaction.response.defer()
-        await interaction.followup.edit_message(content=msg, parent_view=None)
+        await interaction.followup.edit_message(
+            message_id=interaction.message.id,
+            content=msg,
+            view=None
+        )
 
 def get_recommandations(faction, classe, niveau):
     conn = sqlite3.connect("swtor_recommandations.db")
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT specialisation, role, maitrise, precison, alacrite, critique, niveau_min, conseils
-    FROM recommendations
+    SELECT specialisation, role, stat1, stat2, stat3, conseils
+    FROM builds
     WHERE faction=? AND classe_avancee=? AND niveau_min<=?
     """, (faction, classe, niveau))
     results = cursor.fetchall()
