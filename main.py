@@ -29,14 +29,11 @@ async def setup_hook():
 # Événement on_ready + synchronisation slash
 @bot.event
 async def on_ready():
-    print(f"✅ Connecté en tant que {bot.user}")
+    logger.info(f"✅ Connecté en tant que {bot.user}")
     try:
-        if GUILD_ID:
-            synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
-            logger.info(f"✅ {len(synced)} commandes synchronisées pour le serveur {GUILD_ID}")
-        else:
-            synced = await bot.tree.sync()
-            logger.info(f"✅ {len(synced)} commandes globales synchronisées.")
+        guild = discord.Object(id=int(os.getenv("GUILD")))
+        synced = await bot.tree.sync(guild=guild)
+        logger.info(f"✅ {len(synced)} commandes synchronisées pour le serveur {guild.id}")
     except Exception as e:
         logger.info(f"❌ Erreur de synchronisation des commandes : {e}")
 
