@@ -108,7 +108,7 @@ def get_recommandations(faction, classe, niveau):
     cursor.execute("""
     SELECT specialisation, role, maitrise, precision, alacrite, critique, niveau_min, conseils
     FROM recommandations
-    WHERE faction=? AND classe_avancee=? AND niveau_min<=?
+    WHERE faction=? AND classe=? AND niveau_min<=?
     """, (faction, classe, niveau))
     results = cursor.fetchall()
     conn.close()
