@@ -107,7 +107,7 @@ def get_recommandations(faction, classe, niveau):
     cursor = conn.cursor()
     cursor.execute("""
     SELECT specialisation, role, stat1, stat2, stat3, conseils
-    FROM builds
+    FROM recommandations
     WHERE faction=? AND classe_avancee=? AND niveau_min<=?
     """, (faction, classe, niveau))
     results = cursor.fetchall()
